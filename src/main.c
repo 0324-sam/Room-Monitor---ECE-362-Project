@@ -85,6 +85,16 @@ int main(void)
     light_init();
 #if ROOM_ENABLE_ALARM
     alarm_init();
+
+    alarm_play(ALERT_TEMP);
+    sleep_ms(500);
+
+    alarm_play(ALERT_HUMIDITY);
+    sleep_ms(500);
+
+    alarm_play(ALERT_DARK);
+    sleep_ms(500);
+    
     alert_t previous_alert = ALERT_NONE;
     uint64_t last_alarm_ms = 0;
 #endif

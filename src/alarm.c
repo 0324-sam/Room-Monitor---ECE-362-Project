@@ -10,15 +10,30 @@
 static uint slice;
 static uint channel;
 
-void alarm_init(void) {
-    gpio_set_function(SPEAKER_PIN, GPIO_FUNC_PWM);
+void alarm_init(void)
+{
+    gpio_init(SPEAKER_PIN);
+    gpio_put(SPEAKER_PIN, 1);
+    gpio_set_dir(SPEAKER_PIN, GPIO_OUT);
 
     slice = pwm_gpio_to_slice_num(SPEAKER_PIN);
     channel = pwm_gpio_to_channel(SPEAKER_PIN);
 
-    pwm_set_clkdiv(slice, (float)PWM_DIVIDER);
-    pwm_set_wrap(slice, 5000);
+    pwm_config config = pwm_get_default_config();
+
+    pwm_config_set_clkdiv(&config, (float)PWM_DIVIDER);
+    pwm_config_set_wrap(&config, 5000);
+
+    pwm_config_set_output_polarity(
+        &config,
+        channel == PWM_CHAN_A,
+        channel == PWM_CHAN_B
+    );
+
+    pwm_init(slice, &config, false);
     pwm_set_chan_level(slice, channel, 0);
+
+    gpio_set_function(SPEAKER_PIN, GPIO_FUNC_PWM);
     pwm_set_enabled(slice, true);
 }
 
